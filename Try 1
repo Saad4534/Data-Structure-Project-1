@@ -1,0 +1,157 @@
+#include<iostream>
+#include<stdlib.h>
+#include<string.h>
+using namespace std;
+
+const int hashtable = 10;
+
+struct Node{ 
+    string file_name;
+    Node *start; 
+    Node *end;
+    int blocksize;
+    Node *next; 
+};
+
+
+struct Hashing{
+	
+    Hashing *next;
+    Node node;
+};
+
+
+Hashing *table[10];
+
+int Hashvalue(int temp)
+{
+	return temp%hashtable;
+}
+
+
+void insertnewFile(int id,string ss)
+{
+	Search(id,ss);
+	Hashing *ptr = new Hashing;
+	Hashing *temp;
+	ptr->node->file_name=ss;
+	ptr->node->next=NULL;
+	ptr->next == NULL;
+	if(table[id]==NULL)
+	{
+		table[id]=ptr;
+	} 
+	else
+	{
+		temp=table[id];
+		while(temp->node-!=NULL)
+		{
+			temp=temp->next;
+		}
+		temp->next=ptr;
+	}
+}
+void Search(int id,string ss)
+{
+	Hashing *temp[10] = table[id]
+	if(temp[id] == NULL)
+	{
+		cout<<"No Data Found"<<endl;
+	}
+	else
+	{
+		for(int i=0;i<10;i++)
+		{
+			temp[id]
+		}
+	}
+}
+
+void display()
+{
+	Hashing *temp;
+	for(int i=0;i<10;i++)
+	{
+		temp=table[i];
+		cout<<" "<<i<<" |->";
+		if(temp!=NULL)
+		{
+			while(temp!=NULL)
+			{
+			if(temp!=NULL)
+			{
+			cout<<" "<<temp->node->file_name<<" |->";
+			}
+			temp=temp->next;
+			}
+			cout<<" | NUll";
+		}
+		else
+		{
+			cout<<" | NULL";
+		}
+		cout<<endl;
+	}
+}
+int main()
+{
+	Hashing *hashing;
+	
+	int choice = -1;
+	while(choice!=0)
+	{
+		system("cls");
+		cout<<"1. Enter new Data \n2. Search\n3. Delete Data\n4. Display All\n\nPress 0 to EXIT"<<endl;
+		cin>>choice;
+		switch(choice)
+		{
+			case 1:
+				{
+					int temp=0;
+					string ss = 0;
+					cout<<"Enter String"<<endl;
+					getline(cin,ss);
+                	for(int i=0;i<ss;i++)
+                 	{
+                 		temp = ss[i]+temp;
+                 	}
+                	int id = Hashvalue(temp);
+                	insertnewFile(id,ss);
+                	Search(id,ss)
+                	break;
+				}
+			case 2:
+				{
+					int temp = 0;
+					string ss = 0;
+					cout<<"Enter String"<<endl;
+					getline(cin,ss);
+                	for(int i=0;i<ss;i++)
+                 	{
+                 		temp = ss[i]+temp;
+                 	}
+					Search();
+					break;
+				}
+			case 3:
+				{
+					int temp = 0;
+					string ss = 0;
+					cout<<"Enter String"<<endl;
+					getline(cin,ss);
+                	for(int i=0;i<ss;i++)
+                 	{
+                 		temp = ss[i]+temp;
+                 	}
+					Delete();
+					break;
+				}
+			case 4:
+				{
+					Display();
+					break;
+				}
+		}
+	}
+	
+}
