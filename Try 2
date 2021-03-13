@@ -1,0 +1,217 @@
+#include<iostream>
+using namespace std;
+const int TABLE_SIZE = 15;
+struct index
+{
+	int current;
+	index *next;
+};
+struct file
+{
+	string name;
+	int key;
+	int size;
+	int start;
+	int end;
+	index *indexlist;	
+};
+char Disk[64];
+int keygeneration(string a)
+{
+	int sum=0;
+	for(int i=0;i<a.length();i++)
+	{
+		sum=sum+a[i];
+	}
+	return sum;
+}
+class HashMap
+{
+    private:
+        file **table;
+    public:   
+	    HashMap()
+		{
+	        table = new file * [TABLE_SIZE];
+	        for (int i = 0; i< TABLE_SIZE; i++)
+	        {
+	            table[i] = NULL;
+	        }
+	    }
+        int HashFunc(int key)
+        {
+            return key % TABLE_SIZE;
+        }
+		
+		void Insert()
+		{
+				file *afile=new file;
+				cout<<"Enter the name of the file: ";
+				cin>>afile->name;
+				cout<<"\nEnter the size of the file: ";
+				cin>>afile->size;
+				afile->key=keygeneration(afile->name);
+				
+	            int hash = HashFunc(afile->key);
+	            while (table[hash] != NULL && table[hash]->key != afile->key)
+	            {
+	                hash = HashFunc(hash + 1);
+	            }
+	            
+	            int count=0;
+	            for(int i=0;i<64;i++)
+	            {
+	            	if(Disk[i]=='E')
+	            	{
+	            		count++;
+					}
+				}
+				
+				if(count>=afile->size)
+				{
+					//list->next=NULL;
+					index* list=new index;
+					index* indexl=list;
+					//indexl=indexl->next;
+					int assigned=0;
+					for(int i=0;i<64;i++)
+					{
+						if(Disk[i]=='E')
+						{
+							indexl->next=new index;
+							//indexl->next->next=NULL;
+							Disk[i]='O';
+							indexl->next->current=i;
+							if(assigned==0)
+							afile->start=i;
+							indexl=indexl->next;
+							assigned++;
+						}
+						if(assigned==afile->size)
+						{
+							afile->end=i;
+							indexl->next=NULL;
+							afile->indexlist=list;
+							break;
+						}
+					}	
+				}
+				else
+				{
+					cout<<"Not enough space.\n";
+				}
+				
+	            table[hash] = afile;
+				            
+		}
+	    
+		file* Search(string name)
+		{
+			int key=keygeneration(name);
+		    int  hash = HashFunc(key);
+		    while (table[hash] != NULL && table[hash]->key != key)
+		    {
+		        hash = HashFunc(hash + 1);
+		    }
+		    if (table[hash] == NULL)
+		        return NULL;
+		    else
+		        return table[hash];
+		    
+	    }
+    	
+		void Remove(string name)
+		{
+			int key=keygeneration(name);
+		    int hash = HashFunc(key);
+		    while (table[hash] != NULL)
+		    {
+		        if (table[hash]->key == key)
+		            break;
+		        hash = HashFunc(hash + 1);
+		    }
+	        if (table[hash] == NULL)
+		    {
+	            cout<<"No element found at key "<<key<<endl;
+	            return;
+	        }
+	        else
+	        {
+	        	file* afile=table[hash];
+	        	index* indexl=afile->indexlist;
+	        	while(indexl->next!=NULL)
+	        	{
+	        		Disk[indexl->next->current]='E';
+	        		indexl=indexl->next;
+				}
+	            delete table[hash];
+	        }
+	        cout<<"Element deleted."<<endl;
+   	 	}
+};
+void display_file(file *afile)
+{
+	if(afile==NULL)
+	{
+		cout<<"\nNo Such File";
+		return;
+	}
+	cout<<"\nThe Name of the file is:"<<afile->name;
+	cout<<"\nThe Size of the file is:"<<afile->size;
+	cout<<"\nThe Index list of the file: ";
+	index* temp=afile->indexlist;
+	while(temp->next!=NULL)
+	{
+		cout<<"->"<<temp->next->current;
+		temp=temp->next;
+	}
+}
+int main()
+{
+	for(int i=0;i<64;i++)
+	{
+		Disk[i]='E';
+	}
+	int choice;
+	HashMap Directory;
+	//build a menu
+	cout<<"WELCOME TO FILE DIRECTORY PROGRAM.\n";
+	cout<<"Main Menu.\n";
+	cout<<"1- Add a file.\n";
+	cout<<"2- Search a file.\n";
+	cout<<"3- Delete a file.\n";
+	while(1)
+	{
+		cout<<"\nEnter the Choice:";
+		cin>>choice;
+		switch(choice)
+		{
+			case 1:
+				{
+					Directory.Insert();
+					break;
+				}
+			case 2:
+				{
+					string name;
+					cout<<"\nEnter the Name of the file to search:";
+					cin>>name;
+					display_file(Directory.Search(name));
+					break;
+				}
+			case 3:
+				{
+					string name;
+					cout<<"\nEnter the Name of the file to search:";
+					cin>>name;
+					Directory.Remove(name);
+					break;
+				}
+			default:
+				{
+					cout<<"\nWrong Choice";
+					break;
+				}
+		}
+	}
+}
