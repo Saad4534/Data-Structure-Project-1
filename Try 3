@@ -1,0 +1,306 @@
+#include<iostream>
+using namespace std;
+char memory[64];
+const int tablesize=11;
+int place=0,count=0,usize=0;
+struct node{
+	string name;
+	int start;
+	int size;
+	int end;
+	node *next;
+};
+node *table[tablesize];
+void memoryinitialize()
+{
+	for(int i=0;i<64;i++)
+	{
+		memory[i]='E';
+	}
+}
+int hash(string expr)
+{
+	int asciisum=0;
+	for(int i=0;i<expr.length();i++)
+	{
+		asciisum+=expr[i];
+	}
+	return asciisum%tablesize;
+}
+int memorycheck(int size)
+{
+	if((64-size)>=usize)
+	{
+		return 1;
+	}
+	else 
+	{
+		return 0;
+	}
+}
+void insert()
+{
+	int filesize,flag=0;
+	string filename;
+	if(usize>=64)
+	{
+		cout<<"Memory full,You can't add more files."<<endl;
+	}
+	else{
+	cout<<"Enter the File name along with data type:"<<endl;
+	cin>>filename;
+	cout<<"Enter the File Size:"<<endl;
+	cin>>filesize;
+	int check=memorycheck(filesize);
+	if(filesize>64)
+	{
+		cout<<"Insert Error,size of file is greater than the memory size."<<endl;
+	}
+	else if(check==1){
+	int index=hash(filename);
+	for(node *tempptr=table[index];tempptr!=NULL;tempptr=tempptr->next)
+	{
+		if(tempptr->name==filename)
+		{
+			cout<<"Insert Error,File with this name already exist,Choose another name."<<endl;
+			flag=1;
+		}
+	}
+	if(flag==0)
+	{
+	node *ptr=new node;
+	node *temp;
+	ptr->name=filename;
+	ptr->size=filesize;
+	ptr->start=usize;
+	ptr->next=NULL;
+	if(table[index]==NULL)
+	{
+		table[index]=ptr;
+		
+	}
+	else
+	{
+		temp=table[index];
+		while(temp->next!=NULL)
+		{
+		temp=temp->next;	
+		}
+		temp->next=ptr;
+	}
+	int loop=usize+filesize;
+	for(int i=usize;i<loop;i++)
+	{
+		memory[i]='O';
+		usize++;
+	}
+	ptr->end=usize;
+	cout<<usize;
+}
+    cout<<"File Added Successfully!"<<endl;
+    count++;
+}
+else
+{
+	cout<<"Memory not availabe for the new file."<<endl;
+}
+}
+}
+void search()
+{
+	if(count==0)
+	{
+		cout<<"No files in memory."<<endl;
+	}
+	else
+	{
+	cout<<"Enter file name along with data type you want to find"<<endl;
+	string filename;
+	cin>>filename;
+	int flag=0;
+	int index=hash(filename);
+	int pos=1;
+	if(table[index]==NULL)
+	{
+		cout<<"No such value found."<<endl;
+	}
+	else
+	{
+	for(node *search=table[index];search!=NULL;search=search->next)
+	{
+		if(search->name==filename)
+		{
+			cout<<"File has been found at index no. "<<index<< " in position no."<<pos<<endl;
+			flag=1;
+			break;
+		}
+		else 
+		{
+			flag=0;
+			pos++;
+		}
+	}
+	if(flag==0)
+	{
+		cout<<"No such value found."<<endl;
+	}
+}
+}}
+void deletehash(int num,string name)
+{
+	node *prev=table[num];
+	for(node *ptr=prev->next;ptr!=NULL;ptr=ptr->next)
+	{
+		if(ptr->name==name)
+		{
+			prev->next=ptr->next;
+		}
+		prev=prev->next;
+	}
+}
+void remove()
+{
+	if(count==0)
+	{
+		cout<<"No files in memory."<<endl;
+	}
+	else
+	{
+	cout<<"Enter file name along with data type you want to delete"<<endl;
+	string filename;
+	cin>>filename;
+	int flag=0;
+	int index=hash(filename);
+	if(table[index]==NULL)
+	{
+		cout<<"No such value find."<<endl;
+	}
+	else
+	{
+	for(node*ptr=table[index];ptr!=NULL;ptr=ptr->next)
+	{
+		if(ptr->name==filename)
+		{
+			flag=1;
+			if(ptr==table[index])
+			{
+				table[index]=ptr->next;
+			}
+			else
+			{
+				deletehash(index,filename);
+			}
+	for(int i=ptr->start;i<ptr->end;i++)
+	{
+			memory[i]='E';
+			usize--;
+	}
+	cout<<"Deleted Successfully !"<<endl;
+	count--;
+	}
+    else 
+		{
+			flag=0;
+		}
+	}
+	if(flag==0)
+	{
+		cout<<"No such value found."<<endl;
+	}
+}}
+}
+void displaymemory()
+{
+	for(int i=0;i<64;i++)
+	{
+		cout<<"\t"<<memory[i]<<"\t";
+		if((i+1)%5==0)
+		{
+			cout<<endl<<endl;
+		}
+	}
+	cout<<endl;
+}
+void displaydata()
+{
+	node *temp;
+	for(int i=0;i<11;i++)
+	{
+		temp=table[i];
+		cout<<" "<<i<<" |->";
+		if(temp!=NULL)
+		{
+			while(temp!=NULL)
+			{
+			if(temp!=NULL)
+			{
+			cout<<" "<<temp->name<<" ->";
+			}
+			temp=temp->next;
+			}
+			cout<<"  NUll";
+		}
+		else
+		{
+			cout<<"  NULL";
+		}
+		cout<<endl;
+	}
+}
+int main()
+{
+	memoryinitialize();
+	int choose=20;
+	while(choose!=0)
+	{
+	cout<<" ************************************"<<endl;
+	cout<<" *Welcome to file allocation system.*"<<endl;
+	cout<<" *Press 1 to insert a new file.     *"<<endl;
+	cout<<" *Press 2 to search a file.         *"<<endl;
+	cout<<" *Press 3 to delete a file.         *"<<endl;
+	cout<<" *Press 4 to display all files      *"<<endl;
+	cout<<" *Press 5 to display memory.        *"<<endl;
+	cout<<" *Press 0 to exit.                  *"<<endl;
+	cout<<" ************************************"<<endl;
+	cout<<"\nPlease enter your choice"<<endl;
+	cin>>choose;
+	if(choose==1)
+	{
+		insert();
+		system("pause");
+		system("cls");
+	}
+	else if(choose==2)
+	{
+		search();
+		system("pause");
+		system("cls");
+	}
+	else if(choose==3)
+	{
+		remove();
+		system("pause");
+		system("cls");
+	}
+	else if(choose==4)
+	{
+		displaydata();
+		system("pause");
+		system("cls");
+	}
+	else if(choose==5)
+	{
+		displaymemory();
+		system("pause");
+		system("cls");
+	}
+	else if(choose >5 and choose!=0)
+	{
+		cout<<"Invalid option choosed."<<endl;
+		system("pause");
+		system("cls");
+	}
+	    cout<<"Press any number to go back to main menu or 0 to exit."<<endl;
+	    cin>>choose;
+}
+}
